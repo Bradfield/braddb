@@ -31,6 +31,7 @@ class MergeJoin(PlanNode):
         self._r_next = None
         self._s_next = None
         self._buffer = None
+        self._last_io_finished = False
         self._finished = False
 
     def __next__(self):
@@ -53,7 +54,7 @@ class MergeJoin(PlanNode):
                 try:
                     self._r_next = next(R)
                 except StopIteration:
-                    self._finished = True
+                    self._last_io_finished = True
                     break
                 if self.r_key(self._r_next) != self.r_key(r):
                     break
@@ -77,5 +78,7 @@ class MergeJoin(PlanNode):
         try:
             return next(self._buffer)
         except StopIteration:
+            if self._last_io_finished:
+                self._finished = True
             self._buffer = None
             return next(self)
