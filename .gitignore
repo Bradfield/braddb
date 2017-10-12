@@ -1,2 +1,4 @@
 __pycache__
 movielens-database/
+data/*.table
+data/*.index
